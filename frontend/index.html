@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate QR Codes</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Generate QR Codes</h1>
+        <form id="qrForm" action="/generate" method="post">
+            <label for="dateFrom">Date From:</label>
+            <input type="date" id="dateFrom" name="dateFrom" required>
+            <label for="dateTo">Date To:</label>
+            <input type="date" id="dateTo" name="dateTo" required>
+            <button type="submit">Generate</button>
+        </form>
+        <div class="loader" id="loader"></div>
+        <div class="overlay" id="overlay"></div>
+        <textarea id="transformedReceipts" readonly style="display: none;"></textarea>
+        <button id="saveJson" style="display: none;">Save JSON</button>
+        <button id="copyJson" style="display: none;">Copy JSON</button>
+        <div id="qrCodes" style="display: none;">
+            <h2>QR Codes:</h2>
+            <div id="qrCodeList"></div>
+        </div>
+        <div id="toast" class="toast">Text copied to clipboard</div>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>

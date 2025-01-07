@@ -1,0 +1,33 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      - REFRESH_TOKEN=${REFRESH_TOKEN}
+      - DEBUG_MODE=${DEBUG_MODE}
+      - FNS_API_URL=${FNS_API_URL}
+      - FNS_DEVICE_ID=${FNS_DEVICE_ID}
+      - USER_AGENT=${USER_AGENT}
+      - GIN_MODE=release
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    networks:
+      - app-network
+      - default
+    # ports:
+    #   - 8888:80
+    labels: # Уберите, если не используется траефик
+      - "traefik.enable=true"
+      - "traefik.http.routers.qr-fns.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.qr-fns.entrypoints=web"
+
+networks:
+  default:
+    name: reverse-proxy
+    external: true
+  app-network:
+
