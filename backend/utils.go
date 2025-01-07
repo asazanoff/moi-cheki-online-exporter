@@ -43,7 +43,7 @@ func generateRandomID() string {
 // Function to get receipts
 func getReceipts(dateFrom, dateTo string) ([]Receipt, error) {
 	client := &http.Client{}
-	data := fmt.Sprintf(`{"limit":10,"offset":0,"dateFrom":"%s","dateTo":"%s","orderBy":"CREATED_DATE:DESC"}`, dateFrom, dateTo)
+	data := fmt.Sprintf(`{"limit":1000,"offset":0,"dateFrom":"%s","dateTo":"%s","orderBy":"CREATED_DATE:DESC"}`, dateFrom, dateTo)
 	req, err := http.NewRequest("POST", fnsApiUrl+"/api/v1/receipt", bytes.NewBuffer([]byte(data)))
 	if err != nil {
 		return nil, err
