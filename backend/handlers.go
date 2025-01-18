@@ -62,18 +62,18 @@ func handleGenerate(c *gin.Context) {
 				CreatedAt: time.Now(),
 			}
 			transformedReceipt.Ticket.Document.Receipt = *fiscalData
-			transformedReceipt.Ticket.Document.Receipt.TotalSum = float32(int(fiscalData.TotalSum * 100))
-			transformedReceipt.Ticket.Document.Receipt.CashTotalSum = float32(int(fiscalData.CashTotalSum * 100))
-			transformedReceipt.Ticket.Document.Receipt.ECashTotalSum = float32(int(fiscalData.ECashTotalSum * 100))
-			transformedReceipt.Ticket.Document.Receipt.CreditSum = float32(int(fiscalData.CreditSum * 100))
-			transformedReceipt.Ticket.Document.Receipt.PrepaidSum = float32(int(fiscalData.PrepaidSum * 100))
-			transformedReceipt.Ticket.Document.Receipt.ProvisionSum = float32(int(fiscalData.ProvisionSum * 100))
-			transformedReceipt.Ticket.Document.Receipt.NDS10 = float32(int(fiscalData.NDS10 * 100))
-			transformedReceipt.Ticket.Document.Receipt.NDS18 = float32(int(fiscalData.NDS18 * 100))
+			transformedReceipt.Ticket.Document.Receipt.TotalSum = RoundToFloat64(fiscalData.TotalSum)
+			transformedReceipt.Ticket.Document.Receipt.CashTotalSum = RoundToFloat64(fiscalData.CashTotalSum)
+			transformedReceipt.Ticket.Document.Receipt.ECashTotalSum = RoundToFloat64(fiscalData.ECashTotalSum)
+			transformedReceipt.Ticket.Document.Receipt.CreditSum = RoundToFloat64(fiscalData.CreditSum)
+			transformedReceipt.Ticket.Document.Receipt.PrepaidSum = RoundToFloat64(fiscalData.PrepaidSum)
+			transformedReceipt.Ticket.Document.Receipt.ProvisionSum = RoundToFloat64(fiscalData.ProvisionSum)
+			transformedReceipt.Ticket.Document.Receipt.NDS10 = RoundToFloat64(fiscalData.NDS10)
+			transformedReceipt.Ticket.Document.Receipt.NDS18 = RoundToFloat64(fiscalData.NDS18)
 
 			for i := range transformedReceipt.Ticket.Document.Receipt.Items {
-				transformedReceipt.Ticket.Document.Receipt.Items[i].Sum = float32(int(transformedReceipt.Ticket.Document.Receipt.Items[i].Sum * 100))
-				transformedReceipt.Ticket.Document.Receipt.Items[i].Price = float32(int(transformedReceipt.Ticket.Document.Receipt.Items[i].Price * 100))
+				transformedReceipt.Ticket.Document.Receipt.Items[i].Sum = RoundToFloat64(transformedReceipt.Ticket.Document.Receipt.Items[i].Sum)
+				transformedReceipt.Ticket.Document.Receipt.Items[i].Price = RoundToFloat64(transformedReceipt.Ticket.Document.Receipt.Items[i].Price)
 			}
 
 			mu.Lock()
