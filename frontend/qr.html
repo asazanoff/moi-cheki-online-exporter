@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+    <button id="startScan">Start Scan</button>
+    <div id="qr-reader" style="width: 500px;"></div>
+    <script>
+        document.getElementById("startScan").addEventListener("click", function() {
+            const qrCodeRegionId = "qr-reader";
+            const html5QrCode = new Html5Qrcode(qrCodeRegionId);
+
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    const cameraId = devices[0].id;
+                    // Запрос разрешения на доступ к камере
+                    html5QrCode.start(
+                        { facingMode: "environment" },
+                        {
+                            fps: 10,
+                            qrbox: { width: 250, height: 250 }
+                        },
+                        qrCodeMessage => {
+                            console.log("QR Code detected: ", qrCodeMessage);
+                            // Отправка QR-кода на бэкенд
+                            fetch("/api/scan", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ qrCode: qrCodeMessage })
+                            }).then(response => response.json())
+                              .then(data => {
+                                  console.log("Response from backend:", data);
+                                  html5QrCode.stop().then(ignore => {}).catch(err => {});
+                              });
+                        },
+                        errorMessage => {
+                            console.log("QR Code no longer in front of camera.", errorMessage);
+                        })
+                        .catch(err => {
+                            console.log("Error starting QR code scanner.", err);
+                        });
+                } else {
+                    console.log("No cameras found.");
+                }
+            }).catch(err => {
+                console.log("Error getting camera devices:", err);
+            });
+        });
+    </script>
+</body>
+</html>
