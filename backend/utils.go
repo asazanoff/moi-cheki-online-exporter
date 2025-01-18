@@ -7,6 +7,7 @@ import (
 	"github.com/skip2/go-qrcode"
 	"io"
 	"log"
+	"math"
 	"math/rand"
 	"net/http"
 	"time"
@@ -38,6 +39,11 @@ func generateRandomID() string {
 		b[i] = charset[rand.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+// Преобразование суммы с использованием функции округления
+func RoundToFloat64(value float64) float64 {
+	return math.Round(value * 100) // Умножаем на 100 и округляем
 }
 
 // Function to get receipts
