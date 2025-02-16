@@ -23,7 +23,7 @@ services:
     labels: # Уберите, если не используется траефик
       - "traefik.enable=true"
       - "traefik.http.routers.qr-fns.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.qr-fns.entrypoints=web"
+      - "traefik.http.routers.qr-fns.entrypoints=websecure"
 
 networks:
   default:
