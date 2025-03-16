@@ -11,6 +11,8 @@ services:
     restart: unless-stopped
     networks:
       - app-network
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
 
   frontend:
     build: ./frontend
@@ -24,6 +26,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.qr-fns.rule=Host(`${APP_DOMAIN}`)"
       - "traefik.http.routers.qr-fns.entrypoints=websecure"
+      - "com.centurylinklabs.watchtower.enable=false"
 
 networks:
   default:

@@ -1,5 +1,5 @@
 # Стадия сборки
-FROM golang:1.23.4-alpine3.21 AS builder
+FROM golang:1.24.1-alpine3.21 AS builder
 
     WORKDIR /app
 
@@ -10,7 +10,7 @@ FROM golang:1.23.4-alpine3.21 AS builder
     RUN go build -o main .
 
 # Стадия выполнения
-FROM alpine:3.21.1
+FROM alpine:3.21.3
 
     WORKDIR /app
 
@@ -19,3 +19,5 @@ FROM alpine:3.21.1
     EXPOSE 8080
 
     CMD ["./main"]
+
+    HEALTHCHECK --interval=30s --timeout=1s --start-period=3s --retries=3 CMD /usr/bin/wget -q  http://localhost:8080/health/ready -O - | /bin/grep 'Ready check passed' || exit 1
