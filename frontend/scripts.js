@@ -20,7 +20,13 @@ document.querySelector("form").onsubmit = async (e) => {
         body: form
     });
     const data = await response.json();
-
+    // Если код ответа не 200, показываем сообщение из data.message
+    if (response.status !== 200) {
+        showToast(data.message || "An error occurred");
+        loader.style.display = "none";
+        overlay.style.display = "none";
+        return;
+    }
     const qrCodeList = document.getElementById("qrCodeList");
     const transformedReceipts = document.getElementById("transformedReceipts");
     const saveJsonButton = document.getElementById("saveJson");

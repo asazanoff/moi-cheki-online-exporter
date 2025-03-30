@@ -8,11 +8,41 @@ services:
       - FNS_DEVICE_ID=${FNS_DEVICE_ID}
       - USER_AGENT=${USER_AGENT}
       - GIN_MODE=release
+      - MONGO_URI=mongodb://mongo:27017
     restart: unless-stopped
     networks:
       - app-network
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
+    depends_on:
+      - mongo
+  mongo:
+    image: bitnami/mongodb
+    volumes:
+      - ./mongodb:/bitnami/mongodb
+    restart: unless-stopped
+    environment:
+      ALLOW_EMPTY_PASSWORD: true
+    networks:
+      - app-network
+  mongo-explorer:
+    image: mongo-express
+    restart: unless-stopped
+    networks:
+      - app-network
+      - default
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_BASICAUTH_USERNAME=root
+      - ME_CONFIG_BASICAUTH_PASSWORD=root
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongo-explorer.rule=Host(`mongo-explorer.t.enzel.su`)"
+      - "traefik.http.routers.mongo-explorer.entrypoints=websecure"
+      - "traefik.http.services.mongo-explorer.loadbalancer.server.port=8081"
+      - "traefik.http.routers.mongo-explorer.service=mongo-explorer"
+    depends_on:
+      - mongo
 
   frontend:
     build: ./frontend

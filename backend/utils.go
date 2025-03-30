@@ -13,6 +13,16 @@ import (
 	"time"
 )
 
+// APIResponseError — тип ошибки, который включает HTTP-статус и сообщение.
+type APIResponseError struct {
+	StatusCode int
+	Message    string
+}
+
+func (e *APIResponseError) Error() string {
+	return fmt.Sprintf("API responded with %d: %s", e.StatusCode, e.Message)
+}
+
 // Function to format the datetime string
 func formatDateTime(dateTime string) string {
 	t, err := time.Parse("2006-01-02T15:04:05", dateTime)
@@ -75,8 +85,13 @@ func getReceipts(dateFrom, dateTo string) ([]Receipt, error) {
 	}
 
 	if debugMode {
-		log.Printf("DEBUG: Response Status: %s", resp.Status)
+		log.Printf("DEBUG: Response Status: %d", resp.StatusCode)
 		log.Printf("DEBUG: Response Body: %s", string(body))
+	}
+
+	// Если статус, полученный от API, не 200, возвращаем ошибку с этим статусом.
+	if resp.StatusCode != http.StatusOK {
+		return nil, &APIResponseError{StatusCode: resp.StatusCode, Message: string(body)}
 	}
 
 	var receiptResponse ReceiptResponse
@@ -116,8 +131,12 @@ func getFiscalData(key string) (*FiscalDataResponse, error) {
 	}
 
 	if debugMode {
-		log.Printf("DEBUG: Response Status: %s", resp.Status)
+		log.Printf("DEBUG: Response Status: %d", resp.StatusCode)
 		log.Printf("DEBUG: Response Body: %s", string(body))
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, &APIResponseError{StatusCode: resp.StatusCode, Message: string(body)}
 	}
 
 	var fiscalDataResponse FiscalDataResponse
