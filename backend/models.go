@@ -63,11 +63,11 @@ type FiscalDataResponse struct {
 }
 
 type TransformedReceipt struct {
-	ID        string    `json:"_id"`
-	CreatedAt time.Time `json:"createdAt"`
+	ID        string    `json:"_id" bson:"_id"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 	Ticket    struct {
 		Document struct {
-			Receipt FiscalDataResponse `json:"receipt"`
-		} `json:"document"`
-	} `json:"ticket"`
+			Receipt FiscalDataResponse `json:"receipt" bson:"receipt"`
+		} `json:"document" bson:"document"`
+	} `json:"ticket" bson:"ticket"`
 }
