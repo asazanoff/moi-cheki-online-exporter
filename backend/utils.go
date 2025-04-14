@@ -8,7 +8,6 @@ import (
 	"io"
 	"log"
 	"math"
-	"math/rand"
 	"net/http"
 	"time"
 )
@@ -41,16 +40,6 @@ func formatDateTime(dateTime string) string {
 	return t.Format("20060102T1504")
 }
 
-// Function to generate random ID
-func generateRandomID() string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, 24)
-	for i := range b {
-		b[i] = charset[rand.Intn(len(charset))]
-	}
-	return string(b)
-}
-
 // Преобразование суммы с использованием функции округления
 func RoundToFloat64(value float64) float64 {
 	return math.Round(value * 100) // Умножаем на 100 и округляем
@@ -59,7 +48,7 @@ func RoundToFloat64(value float64) float64 {
 // Function to get receipts
 func getReceipts(dateFrom, dateTo string) ([]Receipt, error) {
 	client := &http.Client{}
-	data := fmt.Sprintf(`{"limit":1000,"offset":0,"dateFrom":"%s","dateTo":"%s","orderBy":"CREATED_DATE:DESC"}`, dateFrom, dateTo)
+	data := fmt.Sprintf(`{"limit":10000,"offset":0,"dateFrom":"%s","dateTo":"%s","orderBy":"CREATED_DATE:ASC"}`, dateFrom, dateTo)
 	req, err := http.NewRequest("POST", fnsApiUrl+"/api/v1/receipt", bytes.NewBuffer([]byte(data)))
 	if err != nil {
 		return nil, err

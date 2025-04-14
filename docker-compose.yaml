@@ -9,6 +9,7 @@ services:
       - USER_AGENT=${USER_AGENT}
       - GIN_MODE=release
       - MONGO_URI=mongodb://mongo:27017
+      - RECEIVE_DELAY=0
     restart: unless-stopped
     networks:
       - app-network
