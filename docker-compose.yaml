@@ -8,11 +8,25 @@ services:
       - FNS_DEVICE_ID=${FNS_DEVICE_ID}
       - USER_AGENT=${USER_AGENT}
       - GIN_MODE=release
+      - MONGO_URI=mongodb://mongo:27017
+      - RECEIVE_DELAY=0
     restart: unless-stopped
     networks:
       - app-network
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
+    depends_on:
+      - mongo
+
+  mongo:
+    image: bitnami/mongodb
+    volumes:
+      - ./mongodb:/bitnami/mongodb
+    restart: unless-stopped
+    environment:
+      ALLOW_EMPTY_PASSWORD: true
+    networks:
+      - app-network
 
   frontend:
     build: ./frontend

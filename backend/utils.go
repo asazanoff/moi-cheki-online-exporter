@@ -8,10 +8,19 @@ import (
 	"io"
 	"log"
 	"math"
-	"math/rand"
 	"net/http"
 	"time"
 )
+
+// APIResponseError — тип ошибки, который включает HTTP-статус и сообщение.
+type APIResponseError struct {
+	StatusCode int
+	Message    string
+}
+
+func (e *APIResponseError) Error() string {
+	return fmt.Sprintf("API responded with %d: %s", e.StatusCode, e.Message)
+}
 
 // Function to format the datetime string
 func formatDateTime(dateTime string) string {
@@ -31,16 +40,6 @@ func formatDateTime(dateTime string) string {
 	return t.Format("20060102T1504")
 }
 
-// Function to generate random ID
-func generateRandomID() string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	b := make([]byte, 24)
-	for i := range b {
-		b[i] = charset[rand.Intn(len(charset))]
-	}
-	return string(b)
-}
-
 // Преобразование суммы с использованием функции округления
 func RoundToFloat64(value float64) float64 {
 	return math.Round(value * 100) // Умножаем на 100 и округляем
@@ -49,7 +48,7 @@ func RoundToFloat64(value float64) float64 {
 // Function to get receipts
 func getReceipts(dateFrom, dateTo string) ([]Receipt, error) {
 	client := &http.Client{}
-	data := fmt.Sprintf(`{"limit":1000,"offset":0,"dateFrom":"%s","dateTo":"%s","orderBy":"CREATED_DATE:DESC"}`, dateFrom, dateTo)
+	data := fmt.Sprintf(`{"limit":10000,"offset":0,"dateFrom":"%s","dateTo":"%s","orderBy":"CREATED_DATE:ASC"}`, dateFrom, dateTo)
 	req, err := http.NewRequest("POST", fnsApiUrl+"/api/v1/receipt", bytes.NewBuffer([]byte(data)))
 	if err != nil {
 		return nil, err
@@ -75,8 +74,13 @@ func getReceipts(dateFrom, dateTo string) ([]Receipt, error) {
 	}
 
 	if debugMode {
-		log.Printf("DEBUG: Response Status: %s", resp.Status)
+		log.Printf("DEBUG: Response Status: %d", resp.StatusCode)
 		log.Printf("DEBUG: Response Body: %s", string(body))
+	}
+
+	// Если статус, полученный от API, не 200, возвращаем ошибку с этим статусом.
+	if resp.StatusCode != http.StatusOK {
+		return nil, &APIResponseError{StatusCode: resp.StatusCode, Message: string(body)}
 	}
 
 	var receiptResponse ReceiptResponse
@@ -116,8 +120,12 @@ func getFiscalData(key string) (*FiscalDataResponse, error) {
 	}
 
 	if debugMode {
-		log.Printf("DEBUG: Response Status: %s", resp.Status)
+		log.Printf("DEBUG: Response Status: %d", resp.StatusCode)
 		log.Printf("DEBUG: Response Body: %s", string(body))
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, &APIResponseError{StatusCode: resp.StatusCode, Message: string(body)}
 	}
 
 	var fiscalDataResponse FiscalDataResponse
