@@ -15,13 +15,13 @@ server {
     }
 
     location /health/ready {
-        proxy_pass http://backend:8080/health/ready;
+        proxy_pass http://${BACKENDHOST}/health/ready;
         proxy_connect_timeout 1s;
         proxy_read_timeout 1s;
     }
 
     location /generate {
-        proxy_pass http://backend:8080;
+        proxy_pass http://${BACKENDHOST};
         proxy_read_timeout 600s;
         client_body_timeout 600s;
     }
